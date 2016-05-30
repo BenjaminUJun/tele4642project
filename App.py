@@ -14,6 +14,8 @@ def getIPs():
     for line in input:
         iplist.append(line.strip())
 
+getIPs()
+
 for device in deviceList:
    print device
 
@@ -24,4 +26,5 @@ for device in deviceList:
    response = requests.post('http://localhost:8080/stats/flowentry/add', data=initFlow2) 
 
    for ip in iplist:
-      netflixFlow = "{\"dpid\": %s, \"table_id\": 0, \"idle_timeout\": 0, \"hard_timeout\": 0, \"priority\": 2, \"flags\": 1, \"match\":{ \"in_port\":1, \"nw_src\": %s,  \"dl_type\": 2048 }, \"actions\":[ \"type\":\"OUTPUT\", \"port\": 2 ]}" % device, ip
+      netflixFlow = "{\"dpid\": %s, \"table_id\": 0, \"idle_timeout\": 0, \"hard_timeout\": 0, \"priority\": 2, \"flags\": 1, \"match\":{ \"in_port\":1, \"nw_src\": \"%s\",  \"dl_type\": 2048 }, \"actions\":[ \"type\":\"OUTPUT\", \"port\": 2 ]}" % (device, ip)
+      response = requests.post('http://localhost:8080/stats/flowentry/add', data=netflixFlow)
