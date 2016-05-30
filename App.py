@@ -1,11 +1,16 @@
+import sys, os
 import requests
 import re
 import json
 
+iplist = []
+
 devices = requests.get('http://localhost:8080/stats/switches')
 deviceList = re.findall("([\d]+)", devices.text)
 
-iplist = []
+if not deviceList:
+   print "No switches found! Exiting..."
+   sys.exit()
 
 # parse the list of Netflix IPs and put them into the list
 def getIPs():
