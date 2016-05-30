@@ -25,6 +25,5 @@ for device in deviceList:
    response = requests.post('http://localhost:8080/stats/flowentry/add', data=initFlow2) 
 
    for ip in iplist:
-      netflixFlow = "{\"dpid\": %s, \"table_id\": 0, \"idle_timeout\": 0, \"hard_timeout\": 0, \"priority\": 2, \"flags\": 1, \"match\":[ { \"in_port\":1 }, { \"ipv4_src\": \"%s\",  \"eth_type\": 2048 } ], \"actions\":[ { \"type\":\"OUTPUT\", \"port\": 2 } ] }" % (device, ip)
+      netflixFlow = "{\"dpid\": %s, \"table_id\": 0, \"idle_timeout\": 0, \"hard_timeout\": 0, \"priority\": 2, \"flags\": 1, \"match\":{ \"ipv4_src\": \"%s\",  \"eth_type\": 2048, \"in_port\":1 }, \"actions\":[ { \"type\":\"OUTPUT\", \"port\": 2 } ] }" % (device, ip)
       response = requests.post('http://localhost:8080/stats/flowentry/add', data=netflixFlow)
-      break
