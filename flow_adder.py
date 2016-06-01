@@ -23,12 +23,33 @@ from ryu.lib.packet import ethernet
 from ryu.lib.packet import ether_types
 from ryu.lib.packet import arp, ipv4
 import array
+import ipaddress
+import ast
+import time
+
+iplist = []
+
+# parse the list of Netflix IPs and put them into the list
+def getIPs():
+   with open("/Users/Addie/Dropbox/Uni work/TELE4642/4642project/iplist2.txt", "r") as input:
+      for line in input:
+         # line = line.strip()
+         # iplist.append(tuple(line.split(',')))
+         iplist.append(line.strip())
+
+# checks if IP is in the Netlix AS range
+def checkIfNetflix(checkIP):
+   for ip in iplist:
+      if ipaddress.ip_address(checkIP.decode("utf-8")) in ipaddress.ip_network(ip.decode("utf-8")):
+         return True
+   return False
 
 class SimpleSwitch13(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
 
     def __init__(self, *args, **kwargs):
         super(SimpleSwitch13, self).__init__(*args, **kwargs)
+        getIPs()
         self.mac_to_port = {}
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
@@ -44,10 +65,24 @@ class SimpleSwitch13(app_manager.RyuApp):
         # 128, OVS will send Packet-In with invalid buffer_id and
         # truncated packet data. In that case, we cannot output packets
         # correctly.  The bug has been fixed in OVS v2.1.0.
-        match = parser.OFPMatch()
-        actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER,
-                                          ofproto.OFPCML_NO_BUFFER)]
-        self.add_flow(datapath, 0, match, actions)
+
+        # match = parser.OFPMatch()
+        # actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER,
+        #                                   ofproto.OFPCML_NO_BUFFER)]
+
+        match = parser.OFPMatch(in_port = 1)
+        actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER, ofproto.OFPCML_NO_BUFFER), parser.OFPActionOutput(2)]
+        self.add_flow(datapath, 3, match, actions)
+
+        match = parser.OFPMatch(in_port = 2)
+        actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER, ofproto.OFPCML_NO_BUFFER), parser.OFPActionOutput(1)]
+        self.add_flow(datapath, 3, match, actions)
+
+        for ip in iplist:
+          time.sleep(0.1)
+          match = parser.OFPMatch(ipv4_src = ip, eth_type=0x0800)
+          actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER, ofproto.OFPCML_NO_BUFFER), parser.OFPActionOutput(2)]
+          self.add_flow(datapath, 1, match, actions)
 
     def add_flow(self, datapath, priority, match, actions, buffer_id=None):
         ofproto = datapath.ofproto
@@ -66,6 +101,9 @@ class SimpleSwitch13(app_manager.RyuApp):
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
+        actions = []
+        match = []
+
         # If you hit this you might want to increase
         # the "miss_send_length" of your switch
         if ev.msg.msg_len < ev.msg.total_len:
@@ -77,7 +115,6 @@ class SimpleSwitch13(app_manager.RyuApp):
         parser = datapath.ofproto_parser
         in_port = msg.match['in_port']
 
-
         pkt = packet.Packet(array.array('B', ev.msg.data))
         eth_pkt = pkt.get_protocol(ethernet.ethernet)
 
@@ -88,12 +125,12 @@ class SimpleSwitch13(app_manager.RyuApp):
         ip4_pkt = pkt.get_protocol(ipv4.ipv4)
         if ip4_pkt:
             pak = ip4_pkt
+            self.logger.info('  _packet_in_handler: src_mac -> %s' % pak.src)
+            self.logger.info('  _packet_in_handler: dst_mac -> %s' % pak.dst)
+            self.logger.info('  _packet_in_handler: %s' % pak)
+            self.logger.info('  ------')
         else:
             pak = eth_pkt
-        self.logger.info('  _packet_in_handler: src_mac -> %s' % pak.src)
-        self.logger.info('  _packet_in_handler: dst_mac -> %s' % pak.dst)
-        self.logger.info('  _packet_in_handler: %s' % pak)
-        self.logger.info('  ------')
 
         dst = eth_pkt.dst
         src = eth_pkt.src
@@ -111,7 +148,24 @@ class SimpleSwitch13(app_manager.RyuApp):
         else:
             out_port = ofproto.OFPP_FLOOD
 
-        actions = [parser.OFPActionOutput(out_port), parser.OFPActionOutput(ofproto.OFPP_CONTROLLER, ofproto.OFPCML_NO_BUFFER)]
+        if ip4_pkt and in_port == 1:
+            self.logger.info("Entering loop to check IP packet for Netflix -> %s" % ip4_pkt.src)
+            for ip in iplist:
+                if checkIfNetflix(ip4_pkt.dst):
+                    self.logger.info("Matched Netlix -> %s" % ip4_pkt.src)
+                    match = parser.OFPMatch(in_port=in_port, eth_dst=dst, ipv4_src=ip4_pkt.src)
+                    actions = [parser.OFPActionOutput(out_port)]
+                    self.add_flow(datapath, 1, match, actions)
+                    self.logger.info("Flow for Netflix added!")
+                    return
+        else: 
+            actions = [parser.OFPActionOutput(out_port)]
+
+            # loop through netflix IP list
+                # if ip4.src is in ipaddress subnet range
+                    # actions = [parser.OFPActionOutput(out_port)] - this needs some kind of check to ensure that out port is never OFPP_FLOOD
+                # else 
+                    # actions = [parser.OFPActionOutput(out_port), parser.OFPActionOutput(ofproto.OFPP_CONTROLLER, ofproto.OFPCML_NO_BUFFER)]
 
         # install a flow to avoid packet_in next time
         if out_port != ofproto.OFPP_FLOOD:
