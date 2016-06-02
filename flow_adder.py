@@ -1,18 +1,3 @@
-# Copyright (C) 2011 Nippon Telegraph and Telephone Corporation.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-# implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 from ryu.base import app_manager
 from ryu.controller import ofp_event
 from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
@@ -25,13 +10,12 @@ from ryu.lib.packet import arp, ipv4
 import array
 import ipaddress
 import ast
-import time
 
 iplist = []
 
 # parse the list of Netflix IPs and put them into the list
 def getIPs():
-   with open("/Users/Addie/Dropbox/Uni work/TELE4642/4642project/iplist2.txt", "r") as input:
+   with open("/Users/Addie/Dropbox/Uni work/TELE4642/4642project/iplist.txt", "r") as input:
       for line in input:
          # line = line.strip()
          # iplist.append(tuple(line.split(',')))
@@ -71,18 +55,12 @@ class SimpleSwitch13(app_manager.RyuApp):
         #                                   ofproto.OFPCML_NO_BUFFER)]
 
         match = parser.OFPMatch(in_port = 1)
-        actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER, ofproto.OFPCML_NO_BUFFER), parser.OFPActionOutput(2)]
-        self.add_flow(datapath, 3, match, actions)
+        actions = [parser.OFPActionOutput(2), ofproto.OFPP_CONTROLLER, ofproto.OFPCML_NO_BUFFER]
+        self.add_flow(datapath, 1, match, actions)
 
         match = parser.OFPMatch(in_port = 2)
-        actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER, ofproto.OFPCML_NO_BUFFER), parser.OFPActionOutput(1)]
-        self.add_flow(datapath, 3, match, actions)
-
-        for ip in iplist:
-          time.sleep(0.1)
-          match = parser.OFPMatch(ipv4_src = ip, eth_type=0x0800)
-          actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER, ofproto.OFPCML_NO_BUFFER), parser.OFPActionOutput(2)]
-          self.add_flow(datapath, 1, match, actions)
+        actions = [parser.OFPActionOutput(1), ofproto.OFPP_CONTROLLER, ofproto.OFPCML_NO_BUFFER]
+        self.add_flow(datapath, 1, match, actions)
 
     def add_flow(self, datapath, priority, match, actions, buffer_id=None):
         ofproto = datapath.ofproto
@@ -138,7 +116,7 @@ class SimpleSwitch13(app_manager.RyuApp):
         dpid = datapath.id
         self.mac_to_port.setdefault(dpid, {})
 
-        self.logger.info("packet in %s %s %s %s", dpid, src, dst, in_port)
+        # self.logger.info("packet in %s %s %s %s", dpid, src, dst, in_port)
 
         # learn a mac address to avoid FLOOD next time.
         self.mac_to_port[dpid][src] = in_port
@@ -150,14 +128,13 @@ class SimpleSwitch13(app_manager.RyuApp):
 
         if ip4_pkt and in_port == 1:
             self.logger.info("Entering loop to check IP packet for Netflix -> %s" % ip4_pkt.src)
-            for ip in iplist:
-                if checkIfNetflix(ip4_pkt.dst):
-                    self.logger.info("Matched Netlix -> %s" % ip4_pkt.src)
-                    match = parser.OFPMatch(in_port=in_port, eth_dst=dst, ipv4_src=ip4_pkt.src)
-                    actions = [parser.OFPActionOutput(out_port)]
-                    self.add_flow(datapath, 1, match, actions)
-                    self.logger.info("Flow for Netflix added!")
-                    return
+            if checkIfNetflix(ip4_pkt.src):
+               self.logger.info("Matched Netlix -> %s" % ip4_pkt.src)
+               match = parser.OFPMatch(in_port=in_port, eth_dst=dst, ipv4_src=ip4_pkt.src)
+               actions = [parser.OFPActionOutput(out_port)]
+               self.add_flow(datapath, 100, match, actions)
+               self.logger.info("Flow for Netflix added!")
+               return
         else: 
             actions = [parser.OFPActionOutput(out_port)]
 
