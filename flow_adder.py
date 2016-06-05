@@ -105,3 +105,5 @@ class SimpleSwitch14(app_manager.RyuApp):
             self.add_flow(datapath, 100, 180, 1, 1, match, actions)
             self.logger.info("Flow for Netflix added!")
             return
+         else:
+            return

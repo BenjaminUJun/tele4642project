@@ -37,17 +37,10 @@ class SimpleMonitor(app_manager.RyuApp):
    def flow_stats_reply_handler(self, ev):
       body = ev.msg.body
 
-      # self.logger.info('datapath      '
-      #              'eth-dst       '
-      #              'packets  bytes')
-      # self.logger.info('------------- '
-      #              '-------------- '
-      #              '-------- --------')
       for stat in sorted([flow for flow in body if flow.priority == 100]):
          flowdata = json.dumps(ev.msg.to_jsondict(), ensure_ascii=True, indent=3, sort_keys=True)
          self.logger.info('%s', flowdata)
-         print flowdata
-         f = open("/Users/Addie/Dropbox/Uni work/TELE4642/4642project/jsonout.txt", "w")
+         f = open("/Users/Addie/Dropbox/Uni work/TELE4642/4642project/jsonout.json", "w")
          f.write(flowdata);
          f.close()
 
@@ -62,5 +55,4 @@ class SimpleMonitor(app_manager.RyuApp):
                          ofp.OFPP_ANY, ofp.OFPG_ANY,
                          cookie, cookie_mask,
                          match)
-     # self.logger.info("Sending request for stats")
      datapath.send_msg(req)
