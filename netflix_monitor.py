@@ -1,5 +1,9 @@
-from operator import attrgetter
+# 4642 Mini-project
+# Group 1
+# Monitoring Netflix traffic with the Northbound Networks Zodiac FX switch
+# Adeline Yeung
 
+from operator import attrgetter
 from ryu.base import app_manager
 from ryu.controller import ofp_event
 from ryu.controller.handler import MAIN_DISPATCHER, DEAD_DISPATCHER
