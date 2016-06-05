@@ -3,10 +3,10 @@
       "body": [
          {
             "OFPFlowStats": {
-               "byte_count": 12965619, 
+               "byte_count": 1598705, 
                "cookie": 0, 
                "duration_nsec": 0, 
-               "duration_sec": 875, 
+               "duration_sec": 68, 
                "flags": 0, 
                "hard_timeout": 0, 
                "idle_timeout": 0, 
@@ -52,17 +52,17 @@
                      "type": 1
                   }
                }, 
-               "packet_count": 10473, 
+               "packet_count": 2224, 
                "priority": 1, 
                "table_id": 0
             }
          }, 
          {
             "OFPFlowStats": {
-               "byte_count": 1972129, 
+               "byte_count": 531405, 
                "cookie": 0, 
                "duration_nsec": 0, 
-               "duration_sec": 875, 
+               "duration_sec": 68, 
                "flags": 0, 
                "hard_timeout": 0, 
                "idle_timeout": 0, 
@@ -100,17 +100,17 @@
                      "type": 1
                   }
                }, 
-               "packet_count": 17386, 
+               "packet_count": 3258, 
                "priority": 1, 
                "table_id": 0
             }
          }, 
          {
             "OFPFlowStats": {
-               "byte_count": 5310972, 
+               "byte_count": 364404, 
                "cookie": 1, 
                "duration_nsec": 0, 
-               "duration_sec": 875, 
+               "duration_sec": 66, 
                "flags": 0, 
                "hard_timeout": 0, 
                "idle_timeout": 180, 
@@ -162,17 +162,17 @@
                      "type": 1
                   }
                }, 
-               "packet_count": 3988, 
+               "packet_count": 281, 
                "priority": 100, 
                "table_id": 0
             }
          }, 
          {
             "OFPFlowStats": {
-               "byte_count": 2482955, 
+               "byte_count": 91971, 
                "cookie": 1, 
                "duration_nsec": 0, 
-               "duration_sec": 874, 
+               "duration_sec": 65, 
                "flags": 0, 
                "hard_timeout": 0, 
                "idle_timeout": 180, 
@@ -217,24 +217,24 @@
                            "OXMTlv": {
                               "field": "ipv4_src", 
                               "mask": null, 
-                              "value": "198.45.63.147"
+                              "value": "23.246.29.144"
                            }
                         }
                      ], 
                      "type": 1
                   }
                }, 
-               "packet_count": 1736, 
+               "packet_count": 67, 
                "priority": 100, 
                "table_id": 0
             }
          }, 
          {
             "OFPFlowStats": {
-               "byte_count": 2791013, 
+               "byte_count": 69429, 
                "cookie": 1, 
                "duration_nsec": 0, 
-               "duration_sec": 454, 
+               "duration_sec": 63, 
                "flags": 0, 
                "hard_timeout": 0, 
                "idle_timeout": 180, 
@@ -279,24 +279,24 @@
                            "OXMTlv": {
                               "field": "ipv4_src", 
                               "mask": null, 
-                              "value": "23.246.29.132"
+                              "value": "198.45.62.138"
                            }
                         }
                      ], 
                      "type": 1
                   }
                }, 
-               "packet_count": 2062, 
+               "packet_count": 51, 
                "priority": 100, 
                "table_id": 0
             }
          }, 
          {
             "OFPFlowStats": {
-               "byte_count": 350768, 
+               "byte_count": 791360, 
                "cookie": 1, 
                "duration_nsec": 0, 
-               "duration_sec": 191, 
+               "duration_sec": 53, 
                "flags": 0, 
                "hard_timeout": 0, 
                "idle_timeout": 180, 
@@ -341,24 +341,24 @@
                            "OXMTlv": {
                               "field": "ipv4_src", 
                               "mask": null, 
-                              "value": "23.246.29.140"
+                              "value": "23.246.28.130"
                            }
                         }
                      ], 
                      "type": 1
                   }
                }, 
-               "packet_count": 266, 
+               "packet_count": 602, 
                "priority": 100, 
                "table_id": 0
             }
          }, 
          {
             "OFPFlowStats": {
-               "byte_count": 1290906, 
+               "byte_count": 14279, 
                "cookie": 1, 
                "duration_nsec": 0, 
-               "duration_sec": 235, 
+               "duration_sec": 5, 
                "flags": 0, 
                "hard_timeout": 0, 
                "idle_timeout": 180, 
@@ -403,14 +403,14 @@
                            "OXMTlv": {
                               "field": "ipv4_src", 
                               "mask": null, 
-                              "value": "198.45.63.148"
+                              "value": "23.246.28.137"
                            }
                         }
                      ], 
                      "type": 1
                   }
                }, 
-               "packet_count": 902, 
+               "packet_count": 12, 
                "priority": 100, 
                "table_id": 0
             }
