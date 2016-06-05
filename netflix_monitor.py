@@ -8,7 +8,6 @@ from ryu.lib import hub
 import json
 
 class SimpleMonitor(app_manager.RyuApp):
-
    def __init__(self, *args, **kwargs):
      super(SimpleMonitor, self).__init__(*args, **kwargs)
      self.datapaths = {}

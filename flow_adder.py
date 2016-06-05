@@ -39,9 +39,6 @@ def checkIfNetflix(checkIP):
 
 # Initialise simple switch with packet_in handler to check if incoming packet is from Netflix
 class SimpleSwitch14(app_manager.RyuApp):
-   # keep this from simple_switch_13, the Zodiac supports it
-   # OFP_VERSIONS = [ofproto_v1_34.OFP_VERSION]
-
    # initialise simple switch and populat ip list with Netflix ranges
    def __init__(self, *args, **kwargs):
       super(SimpleSwitch14, self).__init__(*args, **kwargs)
